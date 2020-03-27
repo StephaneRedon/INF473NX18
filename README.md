@@ -1,4 +1,4 @@
 # INF473NX18
 
-Bonjour, je suis Stephane
-Je suis trÃ¨s bavard
+Bonjour, je suis Thibaut
+Je suis très bavard
