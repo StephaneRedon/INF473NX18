@@ -91,7 +91,7 @@ void SEComplexAnalyzerApp::analyze() {
 			}
 
 
-			std::cout << b << "sur " + a << std::endl;
+			std::cout << b << "sur " << a << std::endl;
 
 			// clean up
 
