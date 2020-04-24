@@ -30,7 +30,8 @@ public :
 	//@}
 
 	void																analyze();
-
+	void																getAtomType();
+	//void																analyzePL();
 };
 
 

@@ -80,3 +80,16 @@ void SEComplexAnalyzerAppGUI::onStart() {
 	getApp()->analyze();
 
 }
+
+void SEComplexAnalyzerAppGUI::onGetType() {
+
+	getApp()->getAtomType();
+
+}
+
+
+void SEComplexAnalyzerAppGUI::onPL() {
+
+	//getApp()->analyzePL();
+
+}

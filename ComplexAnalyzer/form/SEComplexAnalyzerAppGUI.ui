@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>300</width>
-    <height>100</height>
+    <height>272</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -27,6 +27,20 @@
      </property>
     </widget>
    </item>
+   <item>
+    <widget class="QPushButton" name="pushButton">
+     <property name="text">
+      <string>Get Atom Type</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="pushButton_2">
+     <property name="text">
+      <string>P+L</string>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <resources/>
@@ -38,8 +52,8 @@
    <slot>onStart()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>226</x>
-     <y>52</y>
+     <x>248</x>
+     <y>76</y>
     </hint>
     <hint type="destinationlabel">
      <x>256</x>
@@ -47,8 +61,42 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>SEComplexAnalyzerAppGUIClass</receiver>
+   <slot>onGetType()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>149</x>
+     <y>149</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>183</x>
+     <y>165</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_2</sender>
+   <signal>clicked()</signal>
+   <receiver>SEComplexAnalyzerAppGUIClass</receiver>
+   <slot>onPL()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>112</x>
+     <y>205</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>128</x>
+     <y>243</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>onStart()</slot>
+  <slot>onGetType()</slot>
+  <slot>onPL()</slot>
  </slots>
 </ui>

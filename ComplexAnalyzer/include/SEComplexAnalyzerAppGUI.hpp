@@ -53,7 +53,8 @@ public:
 public slots:
 
 	void														onStart();
-
+	void														onGetType();
+	void														onPL();
 
 private:
 
