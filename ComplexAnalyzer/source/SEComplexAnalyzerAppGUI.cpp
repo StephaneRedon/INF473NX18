@@ -90,6 +90,6 @@ void SEComplexAnalyzerAppGUI::onGetType() {
 
 void SEComplexAnalyzerAppGUI::onPL() {
 
-	//getApp()->analyzePL();
+	getApp()->analyzePL();
 
 }

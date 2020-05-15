@@ -2,6 +2,7 @@
 
 #include "SBDApp.hpp"
 #include "SEComplexAnalyzerAppGUI.hpp"
+#include "SBMStructuralModelGrid.hpp"
 
 
 /// This class implements the functionality of the app
@@ -31,7 +32,8 @@ public :
 
 	void																analyze();
 	void																getAtomType();
-	//void																analyzePL();
+	void																analyzePL();
+	SBMStructuralModelGrid*                                createGrid(SBNodeIndexer atomIndexer);
 };
 
 
