@@ -295,7 +295,7 @@ void SEComplexAnalyzerApp::analyzePL() {
 
 					SBPosition3 positionCase(center.v[0] + SBQuantity::angstrom(0.5) * (x - 50), center.v[1] + SBQuantity::angstrom(0.5) * (y - 50), center.v[2] + SBQuantity::angstrom(0.5) * (z - 50));
 
-					gridP->getNeighbors(neighbors, positionCase,SBQuantity::angstrom(0.5*sqrt(3)));
+					gridP->getNeighbors(neighbors, positionCase,SBQuantity::angstrom(2*sqrt(3)));
 					SB_FOR(SBStructuralParticle * particle, neighbors) {
 
 						SBAtom* atom = static_cast<SBAtom*>(particle);
@@ -381,7 +381,7 @@ void SEComplexAnalyzerApp::analyzePL() {
 
 					neighbors = SBIndexer< SBStructuralParticle*>();
 
-					gridPL->getNeighbors(neighbors, positionCase, SBQuantity::angstrom(0.5 * sqrt(3)));
+					gridPL->getNeighbors(neighbors, positionCase, SBQuantity::angstrom(2* sqrt(3)));
 					dmin = SBQuantity::length(DBL_MAX);
 
 					SB_FOR(SBStructuralParticle * particle, neighbors) {
@@ -503,9 +503,35 @@ void SEComplexAnalyzerApp::analyzePL() {
 SBMStructuralModelGrid* SEComplexAnalyzerApp::createGrid(SBNodeIndexer atomIndexer) {
 
 
-	SBMStructuralModelGrid* grid = new SBMStructuralModelGrid(atomIndexer, SBQuantity::angstrom(0.5));
+	SBMStructuralModelGrid* grid = new SBMStructuralModelGrid(atomIndexer, SBQuantity::angstrom(2));
 
 	return grid;
 }
 
 
+void SEComplexAnalyzerApp::prediction() {
+
+
+	SBNodeIndexer nodeIndexer;
+	SAMSON::getActiveDocument()->getNodes(nodeIndexer, SBNode::IsType(SBNode::Atom) && SBNode::IsSelected());
+
+	SBMStructuralModelGrid* grid = createGrid(nodeIndexer);
+	
+	SBVector3 c;
+	c.setZero();
+
+	int i = 0;
+	std::vector<SBQuantity>;
+	SB_FOR(SBNode * node, nodeIndexer){
+
+		SBAtom* atom = static_cast<SBAtom*>(node);
+		SBPosition3 p = atom->getPosition();
+		c = c + SBVector3(p.v[1], p.v[1], p.v[1]);
+		i = i + 1;
+
+	}
+
+	c.setValue({ c.v[0] / i,c.v[1] / i ,c.v[2] / i });
+
+	std::cout << c << std::endl;
+}
