@@ -211,6 +211,11 @@ void SEComplexAnalyzerApp::analyzePL() {
 	//QString folderPath = "D:\\INF473N\\refined-set\\";
 	QString folderPath = "D:\\pdb\\";
 
+	QFile fileP("D:\\INF473N\\Donnees\\DataP.dat");
+	QFile filePL("D:\\INF473N\\Donnees\\DataPL.dat");
+	fileP.open(QIODevice::WriteOnly);
+	filePL.open(QIODevice::WriteOnly);
+
 	SBList<std::string>* parameters = new SBList<std::string>();
 	parameters->push_back("0");
 	parameters->push_back("0");
@@ -368,6 +373,10 @@ void SEComplexAnalyzerApp::analyzePL() {
 						else if (typeAtom == SBElement::Type::Mercury) {
 							vP.push_back((char)20);
 						}
+
+						else {
+							vP.push_back((char)0);
+						}
 					}
 
 					neighbors = SBIndexer< SBStructuralParticle*>();
@@ -453,7 +462,6 @@ void SEComplexAnalyzerApp::analyzePL() {
 							vPL.push_back((char)20);
 						}
 
-
 						else {
 							vPL.push_back((char)0);
 						}
@@ -471,17 +479,14 @@ void SEComplexAnalyzerApp::analyzePL() {
 			}
 		}
 
-		QFile fileP("D:\\INF473N\\Donnees\\" + dir + " P.dat");
-		QFile filePL("D:\\INF473N\\Donnees\\" + dir + " PL.dat");
-		fileP.open(QIODevice::WriteOnly);
+		
+		
+		
 		
 		fileP.write(vP);
-		fileP.close();
-
-		filePL.open(QIODevice::WriteOnly);
 		filePL.write(vPL);
 		
-		filePL.close();
+		
 
 
 
@@ -490,7 +495,8 @@ void SEComplexAnalyzerApp::analyzePL() {
 
 
 	}
-
+	fileP.close();
+	filePL.close();
 }
 
 
