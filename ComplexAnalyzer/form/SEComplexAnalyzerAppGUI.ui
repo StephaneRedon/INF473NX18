@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>300</width>
-    <height>272</height>
+    <width>574</width>
+    <height>468</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -41,6 +41,13 @@
      </property>
     </widget>
    </item>
+   <item>
+    <widget class="QPushButton" name="pushButton_3">
+     <property name="text">
+      <string>Prediction</string>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <resources/>
@@ -52,8 +59,8 @@
    <slot>onStart()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>248</x>
-     <y>76</y>
+     <x>259</x>
+     <y>58</y>
     </hint>
     <hint type="destinationlabel">
      <x>256</x>
@@ -68,8 +75,8 @@
    <slot>onGetType()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>149</x>
-     <y>149</y>
+     <x>160</x>
+     <y>119</y>
     </hint>
     <hint type="destinationlabel">
      <x>183</x>
@@ -84,12 +91,28 @@
    <slot>onPL()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>112</x>
-     <y>205</y>
+     <x>123</x>
+     <y>189</y>
     </hint>
     <hint type="destinationlabel">
      <x>128</x>
      <y>243</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_3</sender>
+   <signal>clicked()</signal>
+   <receiver>SEComplexAnalyzerAppGUIClass</receiver>
+   <slot>onPrediction()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>114</x>
+     <y>419</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>152</x>
+     <y>388</y>
     </hint>
    </hints>
   </connection>
@@ -98,5 +121,6 @@
   <slot>onStart()</slot>
   <slot>onGetType()</slot>
   <slot>onPL()</slot>
+  <slot>onPrediction()</slot>
  </slots>
 </ui>

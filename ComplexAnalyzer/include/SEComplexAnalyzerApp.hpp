@@ -33,6 +33,7 @@ public :
 	void																analyze();
 	void																getAtomType();
 	void																analyzePL();
+	void																prediction();
 	SBMStructuralModelGrid*                                createGrid(SBNodeIndexer atomIndexer);
 };
 

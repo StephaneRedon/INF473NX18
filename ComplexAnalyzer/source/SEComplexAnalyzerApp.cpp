@@ -375,7 +375,7 @@ void SEComplexAnalyzerApp::analyzePL() {
 						}
 
 						else {
-							vP.push_back((char)0);
+							vP.push_back((char)0);								
 						}
 					}
 
@@ -466,7 +466,7 @@ void SEComplexAnalyzerApp::analyzePL() {
 							vPL.push_back((char)0);
 						}
 
-
+						
 
 
 					}
@@ -498,7 +498,6 @@ void SEComplexAnalyzerApp::analyzePL() {
 	fileP.close();
 	filePL.close();
 }
-
 
 
 SBMStructuralModelGrid* SEComplexAnalyzerApp::createGrid(SBNodeIndexer atomIndexer) {

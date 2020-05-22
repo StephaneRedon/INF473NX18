@@ -3,6 +3,7 @@
 #include "SAMSON.hpp"
 #include "SBGWindow.hpp"
 
+
 SEComplexAnalyzerAppGUI::SEComplexAnalyzerAppGUI( SEComplexAnalyzerApp* t ) : SBGApp( t ) {
 
 	ui.setupUi( this );
@@ -92,4 +93,12 @@ void SEComplexAnalyzerAppGUI::onPL() {
 
 	getApp()->analyzePL();
 
+}
+
+
+void SEComplexAnalyzerAppGUI::onPrediction() {
+
+	getApp()->prediction();
+
+	
 }

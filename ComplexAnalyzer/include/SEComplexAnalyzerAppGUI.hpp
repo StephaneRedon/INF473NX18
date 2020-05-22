@@ -55,6 +55,7 @@ public slots:
 	void														onStart();
 	void														onGetType();
 	void														onPL();
+	void                                                        onPrediction();
 
 private:
 
