@@ -19,11 +19,13 @@ SEComplexAnalyzerApp::~SEComplexAnalyzerApp() {
 
 }
 
-SEComplexAnalyzerAppGUI* SEComplexAnalyzerApp::getGUI() const { return static_cast<SEComplexAnalyzerAppGUI*>(SBDApp::getGUI()); }
+SEComplexAnalyzerAppGUI* SEComplexAnalyzerApp::getGUI() const { 
+	return static_cast<SEComplexAnalyzerAppGUI*>(SBDApp::getGUI()); 
+}
 
 void SEComplexAnalyzerApp::analyze() {
 
-	QString folderPath = "D:\\INF473N\\refined-set\\";
+	QString folderPath = "D:\\Modal INF473N\\PDB";
 
 	SBList<std::string>* parameters = new SBList<std::string>();
 	parameters->push_back("0");
@@ -146,7 +148,7 @@ void SEComplexAnalyzerApp::getAtomType() {
 
 
 	//QString folderPath = "D:\\INF473N\\refined-set\\";
-	QString folderPath = "D:\\pdb\\";
+	QString folderPath = "D:\\Modal INF473N\\PDB";
 
 	SBList<std::string>* parameters = new SBList<std::string>();
 	parameters->push_back("0");
@@ -205,16 +207,98 @@ void SEComplexAnalyzerApp::getAtomType() {
 
 }
 
+void figureOutInfluence(SBMStructuralModelGrid* grid, const SBPosition3& positionCase, double* values) {
+	SBIndexer< SBStructuralParticle*> neighbors;
+	grid->getNeighbors(neighbors, positionCase, SBQuantity::angstrom(4 * sqrt(3)));
+
+	SB_FOR(SBStructuralParticle * particle, neighbors) {
+
+		SBAtom* atom = static_cast<SBAtom*>(particle);
+		double d = (positionCase - atom->getPosition()).norm().getValue();
+
+		if (atom != NULL) {
+			SBElement::Type typeAtom = atom->getElementType();
+			double vanDerValsRadius = atom->getVanDerWaalsRadius().getValue();
+			double gaussian = 10*std::exp(-(d * d) / (2 * vanDerValsRadius* vanDerValsRadius));
+			switch (typeAtom)
+			{
+			case SBElement::Type::H:
+				values[0] += gaussian;
+				break;
+			case SBElement::Type::C:
+				values[1] += gaussian;
+				break;
+			case SBElement::Type::N:
+				values[2] += gaussian;
+				break;
+			case SBElement::Type::O:
+				values[3] += gaussian;
+				break;
+			case SBElement::Type::S:
+				values[4] += gaussian;
+				break;
+			case SBElement::Type::P:
+				values[5] += gaussian;
+				break;
+			case SBElement::Type::F:
+				values[6] += gaussian;
+				break;
+			case SBElement::Type::Cl:
+				values[7] += gaussian;
+				break;
+			case SBElement::Type::Br:
+				values[8] += gaussian;
+				break;
+			case SBElement::Type::I:
+				values[9] += gaussian;
+				break;
+			case SBElement::Type::Magnesium:
+				values[10] += gaussian;
+				break;
+			case SBElement::Type::Calcium:
+				values[11] += gaussian;
+				break;
+			case SBElement::Type::Manganese:
+				values[12] += gaussian;
+				break;
+			case SBElement::Type::Iron:
+				values[13] += gaussian;
+				break;
+			case SBElement::Type::Cobalt:
+				values[14] += gaussian;
+				break;
+			case SBElement::Type::Nickel:
+				values[15] += gaussian;
+				break;
+			case SBElement::Type::Copper:
+				values[16] += gaussian;
+				break;
+			case SBElement::Type::Zinc:
+				values[17] += gaussian;
+				break;
+			case SBElement::Type::Cadmium:
+				values[18] += gaussian;
+				break;
+			case SBElement::Type::Mercury:
+				values[19] += gaussian;
+				break;
+			}
+		}
+	}
+}
+
 
 void SEComplexAnalyzerApp::analyzePL() {
 
 	//QString folderPath = "D:\\INF473N\\refined-set\\";
-	QString folderPath = "D:\\pdb\\";
+	QString folderPath = "D:\\Modal INF473N\\PDB\\";
+	QString dataPath = "D:\\Modal INF473N\\Data\\Data";
 
-	QFile fileP("D:\\INF473N\\Donnees\\DataP.dat");
-	QFile filePL("D:\\INF473N\\Donnees\\DataPL.dat");
-	fileP.open(QIODevice::WriteOnly);
-	filePL.open(QIODevice::WriteOnly);
+	QFile* fileP; // ("D:\\Modal INF473N\\Data\\DataP.dat");
+	QFile* filePL; // ("D:\\Modal INF473N\\Data\\DataPL.dat");
+	QDataStream* outP;
+	QDataStream* outPL;
+
 
 	SBList<std::string>* parameters = new SBList<std::string>();
 	parameters->push_back("0");
@@ -229,8 +313,41 @@ void SEComplexAnalyzerApp::analyzePL() {
 	QDir folder(folderPath);
 	QStringList dirnames = folder.entryList(QDir::AllDirs | QDir::NoDotAndDotDot);
 
+	const int fileSize = 400;
+	int currentSize = 0;
+	int numCurrentFile = 1;
+
+	double* vP = new double[20];
+	double* vPL = new double[20];
 
 	foreach(QString dir, dirnames) {
+
+		if (currentSize == fileSize) {
+			++numCurrentFile;
+			currentSize = 0;
+		}
+
+		if (currentSize == 0) {
+			if (numCurrentFile > 1) {
+				fileP->close();
+				filePL->close();
+				delete(fileP);
+				delete(filePL);
+				delete(outP);
+				delete(outPL);
+
+			}
+			fileP = new QFile(dataPath + "P" + QString::number(numCurrentFile) + ".dat");
+			filePL = new QFile(dataPath + "PL" + QString::number(numCurrentFile) + ".dat");
+
+			fileP->open(QIODevice::WriteOnly);
+			filePL->open(QIODevice::WriteOnly);
+
+			outP = new QDataStream(fileP);
+			outPL = new QDataStream(filePL);
+
+		}
+
 
 		SBPointer<SBFolder> folderP = new SBFolder("FolderP");
 		folderP->create();
@@ -240,16 +357,13 @@ void SEComplexAnalyzerApp::analyzePL() {
 
 		QStringList sdfFiles = QDir(folderPath + dir).entryList(QStringList() << "*.sdf" << "*.SDF", QDir::Files);
 		QStringList pdbFiles = QDir(folderPath + dir).entryList(QStringList() << "*protein.pdb" << "*protein.PDB", QDir::Files);
-
+	
 		SAMSON::disableHolding();
 		foreach(QString filename, sdfFiles) {
-
-
 			SAMSON::importFromFile((folderPath + dir + "\\" + filename).toStdString(), parameters, folderL());
-
 		}
-		foreach(QString filename, pdbFiles) {
 
+		foreach(QString filename, pdbFiles) {
 			SAMSON::importFromFile((folderPath + dir + "\\" + filename).toStdString(), parameters, folderP());
 		}
 		SAMSON::enableHolding();
@@ -269,234 +383,56 @@ void SEComplexAnalyzerApp::analyzePL() {
 		SBIAPosition3 boundingBox = SBIAPosition3::empty;
 
 		SB_FOR(SBNode * node, atomIndexerL) {
-
 			SBAtom* atom = static_cast<SBAtom*>(node);
 			boundingBox.bound(atom->getPosition());
-
 		}
 
 		SBPosition3 center(boundingBox.i[0].center(), boundingBox.i[1].center(), boundingBox.i[2].center());
-		std::cout << center<<std::endl;
+		//std::cout << center<<std::endl;
 
 		SBMStructuralModelGrid* gridP = createGrid(atomIndexerP);
 		SBMStructuralModelGrid* gridPL = createGrid(atomIndexerPL);
 
-		QByteArray vP;
-		QByteArray vPL;
-	
-
-		for (int x = 0; x < 100; x = x++) {
-			for (int y = 0; y < 100; y = y++) {
-				for (int z = 0; z < 100; z++) {
+		const int gridSize = 28;
+		
+		for (int x = -0.5* gridSize; x < 0.5 * gridSize; ++x) {
+			for (int y = -0.5 * gridSize; y < 0.5 * gridSize; ++y) {
+				for (int z = -0.5 * gridSize; z < 0.5 * gridSize; ++z) {
 					
 					SBIndexer< SBStructuralParticle*> neighbors;
 					SBAtom* closestAtom = 0;
 					SBQuantity::length dmin(DBL_MAX);
 
-					SBPosition3 positionCase(center.v[0] + SBQuantity::angstrom(0.5) * (x - 50), center.v[1] + SBQuantity::angstrom(0.5) * (y - 50), center.v[2] + SBQuantity::angstrom(0.5) * (z - 50));
-
-					gridP->getNeighbors(neighbors, positionCase,SBQuantity::angstrom(2*sqrt(3)));
-					SB_FOR(SBStructuralParticle * particle, neighbors) {
-
-						SBAtom* atom = static_cast<SBAtom*>(particle);
-						SBQuantity::length d = (positionCase - atom->getPosition()).norm();
-
-						if (d < dmin) {
-							closestAtom = atom;
-							dmin = d;
-						}
-
-					}
-					if (closestAtom == 0) {
-						vP.push_back((char) 0);
-					}
-					else {
-						SBElement::Type typeAtom = closestAtom->getElementType();
-
-						if (typeAtom == SBElement::Type::H) {
-							vP.push_back((char)1);
-						}
-						else if (typeAtom == SBElement::Type::C) {
-							vP.push_back((char)2);
-						}
-						else if (typeAtom == SBElement::Type::N) {
-							vP.push_back((char)3);
-						}
-						else if (typeAtom == SBElement::Type::O) {
-							vP.push_back((char)4);
-						}
-						else if (typeAtom == SBElement::Type::S) {
-							vP.push_back((char)5);
-						}
-						else if (typeAtom == SBElement::Type::P) {
-							vP.push_back((char)6);
-						}
-						else if (typeAtom == SBElement::Type::F) {
-							vP.push_back((char)7);
-						}
-						else if (typeAtom == SBElement::Type::Cl) {
-							vP.push_back((char)8);
-						}
-						else if (typeAtom == SBElement::Type::Br) {
-							vP.push_back((char)9);
-						}
-						else if (typeAtom == SBElement::Type::I) {
-							vP.push_back((char)10);
-						}
-						else if (typeAtom == SBElement::Type::Magnesium) {
-							vP.push_back((char)11);
-						}
-						else if (typeAtom == SBElement::Type::Calcium) {
-							vP.push_back((char)12);
-						}
-						else if (typeAtom == SBElement::Type::Manganese) {
-							vP.push_back((char)13);
-						}
-						else if (typeAtom == SBElement::Type::Iron) {
-							vP.push_back((char)14);
-						}
-						else if (typeAtom == SBElement::Type::Cobalt) {
-							vP.push_back((char)15);
-						}
-						else if (typeAtom == SBElement::Type::Nickel) {
-							vP.push_back((char)16);
-						}
-						else if (typeAtom == SBElement::Type::Copper) {
-							vP.push_back((char)17);
-						}
-						else if (typeAtom == SBElement::Type::Zinc) {
-							vP.push_back((char)18);
-						}
-						else if (typeAtom == SBElement::Type::Cadmium) {
-							vP.push_back((char)19);
-						}
-						else if (typeAtom == SBElement::Type::Mercury) {
-							vP.push_back((char)20);
-						}
-
-						else {
-							vP.push_back((char)0);								
-						}
+					SBPosition3 positionCase(center.v[0] + SBQuantity::angstrom(2) * x, center.v[1] + SBQuantity::angstrom(2) * y, center.v[2] + SBQuantity::angstrom(2) * z);
+					for (int i = 0; i < 20; ++i) {
+						vP[i] = 0;
+						vPL[i] = 0;
 					}
 
-					neighbors = SBIndexer< SBStructuralParticle*>();
+					figureOutInfluence(gridP, positionCase, vP);
+					figureOutInfluence(gridPL, positionCase, vPL);
 
-					gridPL->getNeighbors(neighbors, positionCase, SBQuantity::angstrom(2* sqrt(3)));
-					dmin = SBQuantity::length(DBL_MAX);
-
-					SB_FOR(SBStructuralParticle * particle, neighbors) {
-
-						SBAtom* atom = static_cast<SBAtom*>(particle);
-						SBQuantity::length d = (positionCase - atom->getPosition()).norm();
-
-						if (d < dmin) {
-							closestAtom = atom;
-							dmin = d;
-						}
-
-					}
-					if (closestAtom==0) {
-						vPL.push_back((char)0);
-					}
-					else {
-
-						SBElement::Type typeAtom = closestAtom->getElementType();
-						if (typeAtom == SBElement::Type::H) {
-							vPL.push_back((char)1);
-						}
-						else if (typeAtom == SBElement::Type::C) {
-							vPL.push_back((char)2);
-						}
-						else if (typeAtom == SBElement::Type::N) {
-							vPL.push_back((char)3);
-						}
-						else if (typeAtom == SBElement::Type::O) {
-							vPL.push_back((char)4);
-						}
-						else if (typeAtom == SBElement::Type::S) {
-							vPL.push_back((char)5);
-						}
-						else if (typeAtom == SBElement::Type::P) {
-							vPL.push_back((char)6);
-						}
-						else if (typeAtom == SBElement::Type::F) {
-							vPL.push_back((char)7);
-						}
-						else if (typeAtom == SBElement::Type::Cl) {
-							vPL.push_back((char)8);
-						}
-						else if (typeAtom == SBElement::Type::Br) {
-							vPL.push_back((char)9);
-						}
-						else if (typeAtom == SBElement::Type::I) {
-							vPL.push_back((char)10);
-						}
-						else if (typeAtom == SBElement::Type::Magnesium) {
-							vPL.push_back((char)11);
-						}
-						else if (typeAtom == SBElement::Type::Calcium) {
-							vPL.push_back((char)12);
-						}
-						else if (typeAtom == SBElement::Type::Manganese) {
-							vPL.push_back((char)13);
-						}
-						else if (typeAtom == SBElement::Type::Iron) {
-							vPL.push_back((char)14);
-						}
-						else if (typeAtom == SBElement::Type::Cobalt) {
-							vPL.push_back((char)15);
-						}
-						else if (typeAtom == SBElement::Type::Nickel) {
-							vPL.push_back((char)16);
-						}
-						else if (typeAtom == SBElement::Type::Copper) {
-							vPL.push_back((char)17);
-						}
-						else if (typeAtom == SBElement::Type::Zinc) {
-							vPL.push_back((char)18);
-						}
-						else if (typeAtom == SBElement::Type::Cadmium) {
-							vPL.push_back((char)19);
-						}
-						else if (typeAtom == SBElement::Type::Mercury) {
-							vPL.push_back((char)20);
-						}
-
-						else {
-							vPL.push_back((char)0);
-						}
-
-						
-
-
-					}
-
-
-					
-
-					
+					for (int i = 0; i < 20; ++i) {
+						outP->writeRawData(reinterpret_cast<const char*>(&vP[i]), sizeof(vP[i]));
+						outPL->writeRawData(reinterpret_cast<const char*>(&vPL[i]), sizeof(vPL[i]));
+					}					
 				}
 			}
 		}
 
-		
-		
-		
-		
-		fileP.write(vP);
-		filePL.write(vPL);
-		
-		
-
-
-
 		folderP.deleteReferenceTarget();
 		folderL.deleteReferenceTarget();
 
-
+		++currentSize;
 	}
-	fileP.close();
-	filePL.close();
+	delete[] vP;
+	delete[] vPL;
+	delete fileP;
+	delete filePL;
+	delete outP;
+	delete outPL;
+	fileP->close();
+	filePL->close();
 }
 
 
@@ -517,21 +453,21 @@ void SEComplexAnalyzerApp::prediction() {
 
 	SBMStructuralModelGrid* grid = createGrid(nodeIndexer);
 	
-	SBVector3 c;
+	SBPosition3 c;
 	c.setZero();
 
 	int i = 0;
-	std::vector<SBQuantity>;
 	SB_FOR(SBNode * node, nodeIndexer){
 
 		SBAtom* atom = static_cast<SBAtom*>(node);
 		SBPosition3 p = atom->getPosition();
-		c = c + SBVector3(p.v[1], p.v[1], p.v[1]);
+		c = c + SBPosition3(p.v[0], p.v[1], p.v[2]);
 		i = i + 1;
 
 	}
-
-	c.setValue({ c.v[0] / i,c.v[1] / i ,c.v[2] / i });
+	c.v[0] /= i;
+	c.v[1] /= i;
+	c.v[2] /= i;
 
 	std::cout << c << std::endl;
 }
